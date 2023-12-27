@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../models/budget_category.dart';
 import '../models/budget_entry.dart';
 import '../models/expense.dart';
@@ -12,6 +9,8 @@ import '../models/incoming.dart';
 import '../models/incoming_category.dart';
 import '../models/payer.dart';
 import '../models/payment_type.dart';
+import '../view_models/sql_table.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LocalDatabase {
   Future<Database> _startConnection() async {
@@ -647,94 +646,122 @@ class LocalDatabase {
     return true;
   }
 
-  Future<bool> exportData() async {
+  Future<List<SQLTable>> getTables() async {
     var context = await _startConnection();
 
-    var budgetCategories =
-        await context.rawQuery('SELECT * FROM BudgetCategories');
+    List<Map<String, dynamic>> tables = await context.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '%metadata'");
 
-    var incomingCategories =
-        await context.rawQuery('SELECT * FROM IncomingCategories');
+    _closeConnection(context);
 
-    var payers = await context.rawQuery('SELECT * FROM Payers');
+    List<SQLTable> tableNames =
+        tables.map((t) => SQLTable(name: t['name'])).toList();
 
-    var paymentTypes = await context.rawQuery('SELECT * FROM PaymentTypes');
-
-    var budgetEntries = await context.rawQuery('SELECT * FROM BudgetEntries');
-
-    var expenses = await context.rawQuery('SELECT * FROM Expenses');
-
-    var incomings = await context.rawQuery('SELECT * FROM Incomings');
-
-    await _closeConnection(context);
-
-    try {
-      var data = {
-        'BudgetCategories': budgetCategories,
-        'IncomingCategories': incomingCategories,
-        'Payers': payers,
-        'PaymentTypes': paymentTypes,
-        'BudgetEntries': budgetEntries,
-        'Expenses': expenses,
-        'Incomings': incomings,
-      };
-      String jsonString = jsonEncode(data);
-
-      var output = await getApplicationDocumentsDirectory();
-      String path = '${output.path}/planit_data.json';
-
-      File file = File(path);
-      await file.writeAsString(jsonString);
-
-      return true;
-    } catch (_) {
-      return false;
-    }
+    return tableNames;
   }
 
-  Future<bool> importData() async {
+  Future<List<SQLTable>> getFileTables() async {
+    var directory = await getTemporaryDirectory();
+    await directory.delete(recursive: true);
+
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: ['json'],
     );
 
+    List<SQLTable> tableNames = [];
+
     if (result != null && result.files.single.path != null) {
       try {
         var json = await File(result.files.single.path!).readAsString();
         Map<String, dynamic> data = jsonDecode(json);
 
-        var context = await _startConnection();
-
-        await importTableData(
-            context, 'BudgetCategories', data['BudgetCategories']);
-        await importTableData(
-            context, 'IncomingCategories', data['IncomingCategories']);
-        await importTableData(context, 'Payers', data['Payers']);
-        await importTableData(context, 'PaymentTypes', data['PaymentTypes']);
-        await importTableData(context, 'BudgetEntries', data['BudgetEntries']);
-        await importTableData(context, 'Expenses', data['Expenses']);
-        await importTableData(context, 'Incomings', data['Incomings']);
-      } catch (_) {}
-
-      return true;
+        tableNames = data.entries
+            .map((e) => SQLTable(
+                name: e.key,
+                data: List<Map<String, dynamic>>.from(e.value ?? [])))
+            .toList();
+      } catch (_) {
+        return [];
+      }
     }
 
-    return false;
+    return tableNames;
   }
 
-  Future<void> importTableData(
-      Database db, String table, List<dynamic> data) async {
-    try {
-      if (data.isNotEmpty) {
-        await db.transaction((txn) async {
-          await txn.rawDelete('DELETE FROM $table');
+  Future<int> exportData(List<SQLTable> tables) async {
+    var context = await _startConnection();
+    Map<String, List<Map<String, dynamic>>> data = {};
 
-          for (var record in data) {
-            await txn.insert(table, record);
-          }
-        });
+    for (var table in tables) {
+      try {
+        var tableRecords =
+            await context.rawQuery('SELECT * FROM ${table.name}');
+        data.addAll({table.name: tableRecords});
+      } catch (_) {
+        continue;
       }
-    } catch (_) {}
+    }
+
+    await _closeConnection(context);
+
+    try {
+      var directory = await getTemporaryDirectory();
+      await directory.delete(recursive: true);
+
+      var directoryPath = await FilePicker.platform.getDirectoryPath();
+
+      if (directoryPath == null) {
+        return -1;
+      }
+
+      String path = '$directoryPath/plan_it_data.json';
+
+      File file = File(path);
+      await file.writeAsString(jsonEncode(data));
+
+      return data.length;
+    } catch (_) {
+      return -1;
+    }
+  }
+
+  Future<int> importData(List<SQLTable> tables) async {
+    var context = await _startConnection();
+    int importedRecords = 0;
+
+    for (var table in tables) {
+      try {
+        if (table.data != null && table.data!.isNotEmpty) {
+          await context.transaction((txn) async {
+            for (var record in table.data!) {
+              for (var column in record.keys) {
+                var id = record['ID'];
+
+                if (column != 'ID') {
+                  var updatedRows = await txn.rawUpdate(
+                    'UPDATE ${table.name} SET $column = ? WHERE ID = ?',
+                    [record[column], id],
+                  );
+
+                  if (updatedRows == 0) {
+                    await txn.insert(table.name, record);
+                  }
+
+                  importedRecords++;
+                }
+              }
+            }
+          });
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+
+    await _closeConnection(context);
+
+    return importedRecords;
   }
 }

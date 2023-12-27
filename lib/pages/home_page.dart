@@ -1,7 +1,7 @@
 import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../components/import_export_data_bottom_sheet.dart';
 import '../components/custom_bar_chart.dart';
 import '../components/custom_drawer_button.dart';
 import '../components/loading_container.dart';
@@ -98,13 +98,13 @@ class _HomePageState extends State<HomePage> {
                           label: 'Importar Dados',
                           icon: const Icon(Icons.cloud_upload, size: 22),
                           color: Colors.grey[800],
-                          onPressed: importData),
+                          onPressed: () => importData(context)),
                       CustomDrawerButton(
                           label: 'Exportar Dados',
                           icon: const Icon(Icons.file_download_outlined,
                               size: 22),
                           color: Colors.grey[800],
-                          onPressed: exportData),
+                          onPressed: () => exportData(context)),
                     ])
                   ])),
               floatingActionButtonLocation: ExpandableFab.location,
@@ -253,31 +253,41 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamed(context, AppRoutes.PAYMENT_TYPES);
   }
 
-  exportData() async {
-    await _localDatabase.exportData().then((result) {
-      if (result == true) {
-        Fluttertoast.showToast(msg: 'Dados exportados com sucesso.');
-      } else {
-        Fluttertoast.showToast(
-          msg: 'A exportação dos dados falhou.',
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-      }
-    });
+  exportData(BuildContext context) async {
+    var size = MediaQuery.of(context).size;
+
+    showModalBottomSheet(
+        showDragHandle: true,
+        isScrollControlled: true,
+        constraints: BoxConstraints.tightFor(width: size.width - 20),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        ),
+        context: context,
+        builder: (builder) {
+          return const ImportExportDataBottomSheet(
+            actionType: ActionType.ExportData,
+          );
+        });
   }
 
-  importData() async {
-    await _localDatabase.importData().then((result) {
-      if (result == true) {
-        Fluttertoast.showToast(msg: 'Dados importados com sucesso.');
-      } else {
-        Fluttertoast.showToast(
-          msg: 'A importação dos dados falhou.',
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-      }
-    });
+  importData(BuildContext context) async {
+    var size = MediaQuery.of(context).size;
+
+    showModalBottomSheet(
+        showDragHandle: true,
+        isScrollControlled: true,
+        constraints: BoxConstraints.tightFor(width: size.width - 20),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        ),
+        context: context,
+        builder: (builder) {
+          return const ImportExportDataBottomSheet(
+            actionType: ActionType.ImportData,
+          );
+        });
   }
 }
