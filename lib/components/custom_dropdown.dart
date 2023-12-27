@@ -36,39 +36,39 @@ class CustomDropdown extends StatelessWidget {
               color: iconColor,
             ),
           ),
-          Container(
-              margin: title != null
-                  ? const EdgeInsets.only(top: 8, bottom: 4)
-                  : null,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      child: title != null
-                          ? Text(title!,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                overflow: TextOverflow.ellipsis,
-                              ))
-                          : null,
-                    ),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton(
-                          value: value,
-                          hint: const Text('Selecione uma opção'),
-                          items: [
-                            ...options.map((v) => DropdownMenuItem(
-                                value: v,
-                                child: Text(
-                                  '$prefix $v',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                  ),
-                                )))
-                          ],
-                          onChanged: (dynamic v) => onChanged(v)),
-                    ),
-                  ]))
+          Stack(children: [
+            Positioned(
+              top: 5,
+              child: Container(
+                child: title != null
+                    ? Text(title!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          overflow: TextOverflow.ellipsis,
+                        ))
+                    : null,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: title != null ? 10 : 0),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                    value: value,
+                    hint: const Text('Selecione uma opção'),
+                    items: [
+                      ...options.map((v) => DropdownMenuItem(
+                          value: v,
+                          child: Text(
+                            '$prefix $v',
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          )))
+                    ],
+                    onChanged: (dynamic v) => onChanged(v)),
+              ),
+            ),
+          ])
         ]));
   }
 }

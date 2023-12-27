@@ -219,7 +219,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getDashboardData() async {
     return [
-      await _localDatabase.getIncomings(),
+      await _localDatabase.getIncomings(paidOnly: true),
       await _localDatabase.getExpenses(paidOnly: true),
     ];
   }

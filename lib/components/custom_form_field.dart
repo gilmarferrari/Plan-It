@@ -29,41 +29,41 @@ class CustomFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2.5),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
+    return Card(
+      color: Colors.grey[100],
+      elevation: 0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: TextField(
+            maxLength: maxLength,
+            minLines: null,
+            maxLines: expands ? null : 1,
+            expands: expands,
+            focusNode: focusNode,
+            controller: controller,
+            textAlignVertical: TextAlignVertical.center,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            inputFormatters: keyboardType ==
+                    const TextInputType.numberWithOptions(decimal: true)
+                ? [
+                    DecimalInputFormatter(range: 2),
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                  ]
+                : null,
+            enabled: enabled,
+            decoration: InputDecoration(
+              fillColor: Colors.black12,
+              hintText: !displayFloatingLabel ? label : null,
+              labelText: displayFloatingLabel ? label : null,
+              prefixIcon: Icon(
+                icon,
+                color: Colors.black54,
+                size: 22,
+              ),
+              border: InputBorder.none,
+            )),
       ),
-      child: TextField(
-          maxLength: maxLength,
-          minLines: null,
-          maxLines: expands ? null : 1,
-          expands: expands,
-          focusNode: focusNode,
-          controller: controller,
-          textAlignVertical: TextAlignVertical.center,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          inputFormatters: keyboardType ==
-                  const TextInputType.numberWithOptions(decimal: true)
-              ? [
-                  DecimalInputFormatter(range: 2),
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
-                ]
-              : null,
-          enabled: enabled,
-          decoration: InputDecoration(
-            fillColor: Colors.black12,
-            hintText: !displayFloatingLabel ? label : null,
-            labelText: displayFloatingLabel ? label : null,
-            prefixIcon: Icon(
-              icon,
-              color: Colors.black54,
-              size: 22,
-            ),
-            border: InputBorder.none,
-          )),
     );
   }
 }

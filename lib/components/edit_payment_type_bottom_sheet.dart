@@ -27,7 +27,7 @@ class _EditPaymentTypeBottomSheetState
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SizedBox(
-        height: 180,
+        height: 190,
         child: Column(children: [
           CustomFormField(
               label: 'Descrição',

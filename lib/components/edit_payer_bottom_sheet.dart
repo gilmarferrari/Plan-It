@@ -32,7 +32,7 @@ class _EditPayerBottomSheetState extends State<EditPayerBottomSheet> {
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SizedBox(
-        height: 320,
+        height: 340,
         child: Column(children: [
           CustomFormField(
               label: 'Descrição',

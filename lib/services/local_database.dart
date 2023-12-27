@@ -232,12 +232,12 @@ class LocalDatabase {
     return true;
   }
 
-  Future<List<Expense>> getExpenses({paidOnly = false}) async {
+  Future<List<Expense>> getExpenses({bool paidOnly = false}) async {
     var context = await _startConnection();
 
     var expenses = await context.rawQuery(
-        '''SELECT * FROM Expenses ${paidOnly ? 'WHERE PaymentDate IS NOT NULL AND EntryDate <= "${DateTime.now()}"' : ''}
-        ORDER BY CASE WHEN PaymentDate IS NULL THEN EntryDate ELSE PaymentDate END''');
+        '''SELECT * FROM Expenses ${paidOnly ? 'WHERE PaymentDate IS NOT NULL AND PaymentDate <= "${DateTime.now()}"' : ''}
+        ORDER BY EntryDate''');
 
     await _closeConnection(context);
 
@@ -408,11 +408,12 @@ class LocalDatabase {
     return true;
   }
 
-  Future<List<Incoming>> getIncomings() async {
+  Future<List<Incoming>> getIncomings({bool paidOnly = false}) async {
     var context = await _startConnection();
 
-    var incomings =
-        await context.rawQuery('SELECT * FROM Incomings ORDER BY EntryDate');
+    var incomings = await context.rawQuery(
+        '''SELECT * FROM Incomings ${paidOnly ? 'WHERE EntryDate <= "${DateTime.now()}"' : ''}
+        ORDER BY EntryDate''');
 
     await _closeConnection(context);
 

@@ -45,7 +45,7 @@ class _EditBudgetBottomSheetState extends State<EditBudgetBottomSheet> {
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SizedBox(
-        height: 255,
+        height: 295,
         child: Column(children: [
           CustomFormField(
               label: 'Categoria',

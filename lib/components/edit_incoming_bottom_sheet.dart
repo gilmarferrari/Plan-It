@@ -57,7 +57,7 @@ class _EditIncomingBottomSheetState extends State<EditIncomingBottomSheet> {
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               child: SizedBox(
-                height: 435,
+                height: 440,
                 child: Column(children: [
                   CustomDropdown(
                     title: 'Categoria',

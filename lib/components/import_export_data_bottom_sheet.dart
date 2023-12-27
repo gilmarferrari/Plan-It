@@ -79,10 +79,22 @@ class _ImportExportDataBottomSheetState
 
     switch (widget.actionType) {
       case ActionType.ExportData:
-        tables = await _localDatabase.getTables();
+        await _localDatabase.getTables().then((existingTables) {
+          tables = existingTables;
+
+          if (tables.isEmpty) {
+            Navigator.pop(context);
+          }
+        });
         break;
       case ActionType.ImportData:
-        tables = await _localDatabase.getFileTables();
+        await _localDatabase.getFileTables().then((existingTables) {
+          tables = existingTables;
+
+          if (tables.isEmpty) {
+            Navigator.pop(context);
+          }
+        });
         break;
     }
 
