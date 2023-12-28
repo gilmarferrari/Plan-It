@@ -38,8 +38,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
             expenses.sort((a, b) => a.entryDate.isAfter(b.entryDate) ? -1 : 1);
 
             var months = expenses
-                .map((i) => DateFormat('MMMM/yyyy', 'pt')
-                    .format(i.entryDate))
+                .map((i) => DateFormat('MMMM/yyyy', 'pt').format(i.entryDate))
                 .toSet()
                 .toList();
 

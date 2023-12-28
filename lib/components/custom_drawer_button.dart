@@ -22,11 +22,9 @@ class CustomDrawerButton extends StatelessWidget {
       ),
       onPressed: onPressed,
       child: Row(children: [
-        icon,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(label, style: const TextStyle(fontSize: 16)),
-        ),
+        Container(
+            padding: const EdgeInsets.only(left: 5, right: 15), child: icon),
+        Text(label, style: const TextStyle(fontSize: 16)),
       ]),
     );
   }

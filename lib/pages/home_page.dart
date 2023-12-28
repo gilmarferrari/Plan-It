@@ -1,6 +1,7 @@
 import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import '../components/custom_dropdown.dart';
 import '../components/import_export_data_bottom_sheet.dart';
 import '../components/custom_bar_chart.dart';
 import '../components/custom_drawer_button.dart';
@@ -21,6 +22,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<dynamic> _future;
   late final LocalDatabase _localDatabase = LocalDatabase();
+  final List<int> _years = [
+    for (int i = 2020; i <= DateTime.now().year + 1; i++) i
+  ];
+  int _year = DateTime.now().year;
 
   @override
   void initState() {
@@ -36,6 +41,10 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.connectionState != ConnectionState.waiting) {
             List<Incoming> incomings = snapshot.data[0] ?? [].cast<Incoming>();
             List<Expense> expenses = snapshot.data[1] ?? [].cast<Expense>();
+
+            List<Incoming> lastFiveYearsIncomings = incomings
+                .takeWhile((i) => i.entryDate.year >= (DateTime.now().year - 5))
+                .toList();
 
             return Scaffold(
               resizeToAvoidBottomInset: false,
@@ -162,8 +171,9 @@ class _HomePageState extends State<HomePage> {
               body: ListView(children: [
                 CustomBarChart(
                   title: 'Rendimento Bruto por Ano',
+                  subtitle: 'Últimos 5 anos',
                   records: [
-                    ...incomings.map((i) => OrdinalData(
+                    ...lastFiveYearsIncomings.map((i) => OrdinalData(
                           domain: '${i.entryDate.year}',
                           measure: incomings
                               .where(
@@ -175,9 +185,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 CustomBarChart(
                   title: 'Rendimento Líquido por Ano',
+                  subtitle: 'Últimos 5 anos',
                   color: Colors.green,
                   records: [
-                    ...incomings.map((i) => OrdinalData(
+                    ...lastFiveYearsIncomings.map((i) => OrdinalData(
                           domain: '${i.entryDate.year}',
                           measure: incomings
                               .where(
@@ -188,13 +199,13 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 CustomBarChart(
-                  title: 'Rendimento x Despesas (${DateTime.now().year})',
+                  title: 'Rendimento x Despesas',
                   color: Colors.orange[600],
                   records: [
                     OrdinalData(
                       domain: 'Rendimentos',
                       measure: incomings
-                          .where((i) => i.entryDate.year == DateTime.now().year)
+                          .where((i) => i.entryDate.year == _year)
                           .map((i) => i.grossAmount - i.discounts)
                           .fold<double>(0, (a, b) => a + b),
                     ),
@@ -202,12 +213,25 @@ class _HomePageState extends State<HomePage> {
                       domain: 'Despesas',
                       measure: expenses
                           .where((e) =>
-                              (e.paymentDate ?? e.entryDate).year ==
-                              DateTime.now().year)
+                              (e.paymentDate ?? e.entryDate).year == _year)
                           .map((e) => e.amount)
                           .fold<double>(0, (a, b) => a + b),
                     ),
                   ],
+                  filter: Row(
+                    children: [
+                      CustomDropdown(
+                        title: 'Ano de Referência',
+                        icon: Icons.calendar_month,
+                        value: _year,
+                        options: _years,
+                        backgroundColor: Colors.grey[200],
+                        onChanged: (dynamic year) {
+                          setState(() => _year = year);
+                        },
+                      ),
+                    ],
+                  ),
                 )
               ]),
             );
