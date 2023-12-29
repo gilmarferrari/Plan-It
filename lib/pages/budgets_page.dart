@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
 import '../components/custom_dropdown.dart';
+import '../components/custom_search_field.dart';
 import '../components/edit_budget_bottom_sheet.dart';
 import '../components/loading_container.dart';
 import '../models/budget_category.dart';
@@ -41,6 +42,8 @@ class _BudgetsPageState extends State<BudgetsPage> {
     Month(description: 'Dezembro', value: 12),
   ];
   bool _isLoading = false;
+  bool _isSearchMode = false;
+  String? _searchTerm;
 
   @override
   void initState() {
@@ -60,13 +63,40 @@ class _BudgetsPageState extends State<BudgetsPage> {
             List<BudgetEntry> budgetEntries =
                 snapshot.data[1] ?? [].cast<BudgetEntry>();
 
+            budgetCategories = budgetCategories
+                .where((c) => (_searchTerm == null ||
+                    c.description.toLowerCase().contains(_searchTerm!)))
+                .toList();
+
             return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                title: const Text(
-                  'ORÇAMENTOS',
-                  style: TextStyle(fontSize: 14),
-                ),
+                title: _isSearchMode
+                    ? CustomSearchField(
+                        initialText: _searchTerm,
+                        onChanged: (String searchTerm) {
+                          setState(
+                              () => _searchTerm = searchTerm.toLowerCase());
+                        })
+                    : const Text(
+                        'ORÇAMENTOS',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() => _isSearchMode = !_isSearchMode);
+
+                        if (!_isSearchMode) {
+                          setState(() => _searchTerm = null);
+                        }
+                      },
+                      splashRadius: 20,
+                      icon: Icon(
+                        _isSearchMode ? Icons.close : Icons.search,
+                        size: 20,
+                      ))
+                ],
               ),
               body: Column(
                 children: [
@@ -116,10 +146,10 @@ class _BudgetsPageState extends State<BudgetsPage> {
                         itemBuilder: (ctx, index) {
                           var month = _months[index];
                           var monthBudgeted = budgetEntries
-                              .where((e) =>
-                                  e.entryDate.year == _year &&
-                                  e.entryDate.month == month.value)
-                              .map((e) => e.amount)
+                              .where((b) =>
+                                  b.entryDate.year == _year &&
+                                  b.entryDate.month == month.value)
+                              .map((b) => b.amount)
                               .fold<double>(0, (a, b) => a + b);
 
                           return Column(children: [

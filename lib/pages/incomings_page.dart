@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
+import '../components/custom_search_field.dart';
 import '../components/edit_incoming_bottom_sheet.dart';
 import '../components/loading_container.dart';
 import '../models/incoming.dart';
@@ -20,6 +21,8 @@ class _IncomingsPageState extends State<IncomingsPage> {
   late Future<List<Incoming>> _future;
   late final LocalDatabase _localDatabase = LocalDatabase();
   bool _isLoading = false;
+  bool _isSearchMode = false;
+  String? _searchTerm;
 
   @override
   void initState() {
@@ -37,6 +40,16 @@ class _IncomingsPageState extends State<IncomingsPage> {
             List<Incoming> incomings = snapshot.data ?? [].cast<Incoming>();
             incomings.sort((a, b) => a.entryDate.isAfter(b.entryDate) ? -1 : 1);
 
+            incomings = incomings
+                .where((e) => (_searchTerm == null ||
+                    ('${e.payer?.description}')
+                        .toLowerCase()
+                        .contains(_searchTerm!) ||
+                    e.incomingCategory.description
+                        .toLowerCase()
+                        .contains(_searchTerm!)))
+                .toList();
+
             var months = incomings
                 .map((i) => DateFormat('MMMM/yyyy', 'pt').format(i.entryDate))
                 .toSet()
@@ -45,10 +58,32 @@ class _IncomingsPageState extends State<IncomingsPage> {
             return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                title: const Text(
-                  'RENDIMENTOS',
-                  style: TextStyle(fontSize: 14),
-                ),
+                title: _isSearchMode
+                    ? CustomSearchField(
+                        initialText: _searchTerm,
+                        onChanged: (String searchTerm) {
+                          setState(
+                              () => _searchTerm = searchTerm.toLowerCase());
+                        })
+                    : const Text(
+                        'RENDIMENTOS',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() => _isSearchMode = !_isSearchMode);
+
+                        if (!_isSearchMode) {
+                          setState(() => _searchTerm = null);
+                        }
+                      },
+                      splashRadius: 20,
+                      icon: Icon(
+                        _isSearchMode ? Icons.close : Icons.search,
+                        size: 20,
+                      ))
+                ],
               ),
               floatingActionButton: FloatingActionButton(
                   backgroundColor: AppConstants.primaryColor,
@@ -60,9 +95,8 @@ class _IncomingsPageState extends State<IncomingsPage> {
                   itemBuilder: (ctx, index) {
                     var month = months[index];
                     var monthIncomings = incomings
-                        .where((incoming) =>
-                            DateFormat('MMMM/yyyy', 'pt')
-                                .format(incoming.entryDate) ==
+                        .where((i) =>
+                            DateFormat('MMMM/yyyy', 'pt').format(i.entryDate) ==
                             month)
                         .toList();
 

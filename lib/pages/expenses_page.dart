@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
+import '../components/custom_search_field.dart';
 import '../components/edit_expense_bottom_sheet.dart';
 import '../components/loading_container.dart';
 import '../models/expense.dart';
@@ -20,6 +21,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
   late Future<List<Expense>> _future;
   late final LocalDatabase _localDatabase = LocalDatabase();
   bool _isLoading = false;
+  bool _isSearchMode = false;
+  String? _searchTerm;
 
   @override
   void initState() {
@@ -37,6 +40,11 @@ class _ExpensesPageState extends State<ExpensesPage> {
             List<Expense> expenses = snapshot.data ?? [].cast<Expense>();
             expenses.sort((a, b) => a.entryDate.isAfter(b.entryDate) ? -1 : 1);
 
+            expenses = expenses
+                .where((e) => (_searchTerm == null ||
+                    ('${e.description}').toLowerCase().contains(_searchTerm!)))
+                .toList();
+
             var months = expenses
                 .map((i) => DateFormat('MMMM/yyyy', 'pt').format(i.entryDate))
                 .toSet()
@@ -45,10 +53,32 @@ class _ExpensesPageState extends State<ExpensesPage> {
             return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                title: const Text(
-                  'DESPESAS',
-                  style: TextStyle(fontSize: 14),
-                ),
+                title: _isSearchMode
+                    ? CustomSearchField(
+                        initialText: _searchTerm,
+                        onChanged: (String searchTerm) {
+                          setState(
+                              () => _searchTerm = searchTerm.toLowerCase());
+                        })
+                    : const Text(
+                        'DESPESAS',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() => _isSearchMode = !_isSearchMode);
+
+                        if (!_isSearchMode) {
+                          setState(() => _searchTerm = null);
+                        }
+                      },
+                      splashRadius: 20,
+                      icon: Icon(
+                        _isSearchMode ? Icons.close : Icons.search,
+                        size: 20,
+                      ))
+                ],
               ),
               floatingActionButton: FloatingActionButton(
                   backgroundColor: AppConstants.primaryColor,
@@ -60,9 +90,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   itemBuilder: (ctx, index) {
                     var month = months[index];
                     var monthExpenses = expenses
-                        .where((incoming) =>
-                            DateFormat('MMMM/yyyy', 'pt')
-                                .format(incoming.entryDate) ==
+                        .where((e) =>
+                            DateFormat('MMMM/yyyy', 'pt').format(e.entryDate) ==
                             month)
                         .toList();
 
