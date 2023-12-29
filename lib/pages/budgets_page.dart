@@ -111,6 +111,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                   ),
                   Flexible(
                     child: ListView.builder(
+                        key: PageStorageKey(widget.key),
                         itemCount: _months.length,
                         itemBuilder: (ctx, index) {
                           var month = _months[index];

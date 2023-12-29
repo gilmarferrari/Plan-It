@@ -126,13 +126,12 @@ class LocalDatabase {
     return true;
   }
 
-  Future<List<BudgetEntry>> getBudgetEntries(
-      {required int year, int? month}) async {
+  Future<List<BudgetEntry>> getBudgetEntries({int? year, int? month}) async {
     var context = await _startConnection();
 
     var budgetEntries = await context.rawQuery(
-        '''SELECT * FROM BudgetEntries WHERE strftime("%Y", EntryDate) = "$year"
-        ${month != null ? 'AND strftime("%m", EntryDate) = "${month.toString().padLeft(2, '0')}"' : ''}''');
+        '''SELECT * FROM BudgetEntries WHERE ($year IS NULL OR strftime("%Y", EntryDate) = "$year")
+        AND ($month IS NULL OR strftime("%m", EntryDate) = "${month.toString().padLeft(2, '0')}");''');
     var budgetCategories = await getBudgetCategories();
 
     await _closeConnection(context);

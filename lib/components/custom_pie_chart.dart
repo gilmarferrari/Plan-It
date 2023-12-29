@@ -2,7 +2,9 @@ import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class CustomBarChart extends StatelessWidget {
+import 'custom_chart_legend.dart';
+
+class CustomPieChart extends StatelessWidget {
   final String title;
   final String? subtitle;
   final List<OrdinalData> records;
@@ -10,11 +12,10 @@ class CustomBarChart extends StatelessWidget {
   final BarLabelPosition barLabelPosition;
   final BarLabelAnchor barLabelAnchor;
   final String suffix;
-  final Color? color;
   final Widget? filter;
   final bool vertical;
 
-  const CustomBarChart(
+  const CustomPieChart(
       {required this.title,
       required this.records,
       required this.labelFormat,
@@ -22,7 +23,6 @@ class CustomBarChart extends StatelessWidget {
       this.barLabelAnchor = BarLabelAnchor.middle,
       this.suffix = '',
       this.subtitle,
-      this.color,
       this.filter,
       this.vertical = true,
       super.key});
@@ -56,36 +56,35 @@ class CustomBarChart extends StatelessWidget {
           Container(
               padding: EdgeInsets.symmetric(vertical: filter != null ? 5 : 0),
               child: filter),
-          Container(
-            width: double.infinity,
-            height: 220,
-            padding: const EdgeInsets.all(10),
-            child: DChartBarO(
-              configRenderBar: ConfigRenderBar(maxBarWidthPx: 100),
-              barLabelValue: (barGroup, barData, index) =>
-                  '${labelFormat.format((barData.measure as double).round())}$suffix',
-              barLabelDecorator: BarLabelDecorator(
-                  barLabelPosition: barLabelPosition,
-                  labelAnchor: barLabelAnchor),
-              outsideBarLabelStyle: (barGroup, barData, index) =>
-                  const LabelStyle(fontSize: 11),
-              animate: true,
-              vertical: vertical,
-              measureAxis:
-                  const MeasureAxis(showLine: false, desiredMaxTickCount: 3),
-              domainAxis: const DomainAxis(
-                gapAxisToLabel: 16,
-                thickLength: 8,
-                showLine: false,
+          Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 300,
+                padding: const EdgeInsets.all(10),
+                child: records.where((r) => r.measure > 0).isNotEmpty
+                    ? DChartPieO(
+                        configRenderPie: ConfigRenderPie(
+                            arcLabelDecorator: ArcLabelDecorator(
+                          labelPosition: ArcLabelPosition.auto,
+                          outsideLabelStyle: const LabelStyle(
+                              color: Colors.black87, fontSize: 11),
+                        )),
+                        customLabel: (pieData, index) {
+                          return labelFormat
+                              .format((pieData.measure as double).round());
+                        },
+                        animate: true,
+                        data: [...records],
+                      )
+                    : Center(
+                        child: Text(
+                        'Sem dados',
+                        style: TextStyle(color: Colors.grey[600]),
+                      )),
               ),
-              groupList: [
-                OrdinalGroup(
-                    id: 'Bar',
-                    chartType: ChartType.bar,
-                    color: color ?? Colors.blueAccent,
-                    data: [...records]),
-              ],
-            ),
+              CustomChartLegend(records: records)
+            ],
           ),
         ],
       ),

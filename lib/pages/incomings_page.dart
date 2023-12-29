@@ -55,6 +55,7 @@ class _IncomingsPageState extends State<IncomingsPage> {
                   onPressed: () => addIncoming(context),
                   child: const Icon(Icons.add)),
               body: ListView.builder(
+                  key: PageStorageKey(widget.key),
                   itemCount: months.length,
                   itemBuilder: (ctx, index) {
                     var month = months[index];

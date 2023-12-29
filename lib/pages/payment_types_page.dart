@@ -49,6 +49,7 @@ class _PaymentTypesPageState extends State<PaymentTypesPage> {
                   onPressed: () => addPaymentType(context),
                   child: const Icon(Icons.add)),
               body: ListView.builder(
+                  key: PageStorageKey(widget.key),
                   itemCount: paymentTypes.length,
                   itemBuilder: (ctx, index) {
                     var paymentType = paymentTypes[index];

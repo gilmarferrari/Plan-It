@@ -50,6 +50,7 @@ class _PayersPageState extends State<PayersPage> {
                   onPressed: () => addPayer(context),
                   child: const Icon(Icons.add)),
               body: ListView.builder(
+                  key: PageStorageKey(widget.key),
                   itemCount: payers.length,
                   itemBuilder: (ctx, index) {
                     var payer = payers[index];
