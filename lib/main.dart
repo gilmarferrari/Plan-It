@@ -9,6 +9,7 @@ import 'pages/home_page.dart';
 import 'pages/incomings_page.dart';
 import 'pages/payers_page.dart';
 import 'pages/payment_types_page.dart';
+import 'pages/transactions_page.dart';
 import 'utils/app_constants.dart';
 import 'utils/app_routes.dart';
 
@@ -38,6 +39,7 @@ class App extends StatelessWidget {
           AppRoutes.CATEGORIES: (ctx) => const CategoriesPage(),
           AppRoutes.PAYERS: (ctx) => const PayersPage(),
           AppRoutes.PAYMENT_TYPES: (ctx) => const PaymentTypesPage(),
+          AppRoutes.TRANSACTIONS: (ctx) => const TransactionsPage(),
         },
         debugShowCheckedModeBanner: false,
         localizationsDelegates: const [GlobalMaterialLocalizations.delegate]);

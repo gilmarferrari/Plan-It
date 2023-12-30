@@ -100,11 +100,9 @@ class _BudgetsPageState extends State<BudgetsPage> {
               ),
               body: Column(
                 children: [
-                  Container(
+                  Card(
                     color: AppConstants.primaryColor,
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    height: 50,
+                    margin: const EdgeInsets.all(5),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(

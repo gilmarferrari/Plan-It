@@ -156,6 +156,11 @@ class _HomePageState extends State<HomePage>
                             icon: const Icon(Icons.apartment, size: 22),
                             color: Colors.grey[800],
                             onPressed: goToPayers),
+                        CustomDrawerButton(
+                            label: 'Transações',
+                            icon: const Icon(Icons.timeline, size: 22),
+                            color: Colors.grey[800],
+                            onPressed: goToTransactions),
                         const Divider(indent: 20, endIndent: 20),
                         CustomDrawerButton(
                             label: 'Importar Dados',
@@ -234,7 +239,7 @@ class _HomePageState extends State<HomePage>
                               NumberFormat.compactSimpleCurrency(locale: 'pt'),
                           records: [
                             OrdinalData(
-                              color: Colors.green,
+                              color: const Color.fromRGBO(0, 155, 114, 1),
                               domain: 'Rendimentos',
                               measure: incomings
                                   .where((i) =>
@@ -244,7 +249,7 @@ class _HomePageState extends State<HomePage>
                                   .fold<double>(0, (a, b) => a + b),
                             ),
                             OrdinalData(
-                              color: Colors.orange[600],
+                              color: const Color.fromRGBO(255, 152, 0, 1),
                               domain: 'Despesas',
                               measure: expenses
                                   .where((e) =>
@@ -287,7 +292,7 @@ class _HomePageState extends State<HomePage>
                                   .fold<double>(0, (a, b) => a + b),
                             ),
                             OrdinalData(
-                              color: Colors.orange[600],
+                              color: const Color.fromRGBO(255, 152, 0, 1),
                               domain: 'Despesas',
                               measure: expenses
                                   .where((e) =>
@@ -322,6 +327,7 @@ class _HomePageState extends State<HomePage>
                         CustomBarChart(
                           title: 'Rendimento Bruto por Ano',
                           subtitle: 'Últimos 5 anos',
+                          color: const Color.fromRGBO(80, 160, 80, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
                           records: [
@@ -338,7 +344,7 @@ class _HomePageState extends State<HomePage>
                         CustomBarChart(
                           title: 'Rendimento Líquido por Ano',
                           subtitle: 'Últimos 5 anos',
-                          color: Colors.green,
+                          color: const Color.fromRGBO(0, 155, 114, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
                           records: [
@@ -355,7 +361,7 @@ class _HomePageState extends State<HomePage>
                         CustomBarChart(
                           title: 'Descontos por Ano',
                           subtitle: 'Últimos 5 anos',
-                          color: Colors.deepOrange,
+                          color: const Color.fromRGBO(242, 100, 48, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
                           records: [
@@ -377,7 +383,7 @@ class _HomePageState extends State<HomePage>
                         CustomBarChart(
                           title: 'Despesas por Ano',
                           subtitle: 'Últimos 5 anos',
-                          color: Colors.orange[600],
+                          color: const Color.fromRGBO(255, 152, 0, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
                           records: [
@@ -433,6 +439,7 @@ class _HomePageState extends State<HomePage>
                         ),
                         CustomBarChart(
                           title: 'Custo por Categoria',
+                          subtitle: '5 com maior custo',
                           labelFormat:
                               NumberFormat.compactSimpleCurrency(locale: 'pt'),
                           color: Colors.yellow[700],
@@ -507,6 +514,10 @@ class _HomePageState extends State<HomePage>
 
   goToPaymentTypes() {
     Navigator.pushNamed(context, AppRoutes.PAYMENT_TYPES);
+  }
+
+  goToTransactions() {
+    Navigator.pushNamed(context, AppRoutes.TRANSACTIONS);
   }
 
   exportData(BuildContext context) async {

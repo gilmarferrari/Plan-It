@@ -8,4 +8,5 @@ class AppRoutes {
   static const CATEGORIES = '/categories';
   static const PAYERS = '/payers';
   static const PAYMENT_TYPES = '/payment-types';
+  static const TRANSACTIONS = '/transactions';
 }
