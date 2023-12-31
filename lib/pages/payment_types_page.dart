@@ -58,6 +58,8 @@ class _PaymentTypesPageState extends State<PaymentTypesPage> {
                       label: paymentType.description,
                       description: 'Tipo de Pagamento',
                       icon: Icons.credit_card,
+                      iconColor: Colors.purple[400],
+                      onTap: () => editPaymentType(context, paymentType),
                       options: [
                         BottomSheetAction(
                             label: 'Editar',

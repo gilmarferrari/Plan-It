@@ -60,32 +60,38 @@ class CustomBarChart extends StatelessWidget {
             width: double.infinity,
             height: 220,
             padding: const EdgeInsets.all(10),
-            child: DChartBarO(
-              configRenderBar: ConfigRenderBar(maxBarWidthPx: 100),
-              barLabelValue: (barGroup, barData, index) =>
-                  '${labelFormat.format((barData.measure as double).round())}$suffix',
-              barLabelDecorator: BarLabelDecorator(
-                  barLabelPosition: barLabelPosition,
-                  labelAnchor: barLabelAnchor),
-              outsideBarLabelStyle: (barGroup, barData, index) =>
-                  const LabelStyle(fontSize: 11),
-              animate: true,
-              vertical: vertical,
-              measureAxis:
-                  const MeasureAxis(showLine: false, desiredMaxTickCount: 3),
-              domainAxis: const DomainAxis(
-                gapAxisToLabel: 16,
-                thickLength: 8,
-                showLine: false,
-              ),
-              groupList: [
-                OrdinalGroup(
-                    id: 'Bar',
-                    chartType: ChartType.bar,
-                    color: color ?? Colors.blueAccent,
-                    data: [...records]),
-              ],
-            ),
+            child: records.where((r) => r.measure > 0).isNotEmpty
+                ? DChartBarO(
+                    configRenderBar: ConfigRenderBar(maxBarWidthPx: 100),
+                    barLabelValue: (barGroup, barData, index) =>
+                        '${labelFormat.format((barData.measure as double).round())}$suffix',
+                    barLabelDecorator: BarLabelDecorator(
+                        barLabelPosition: barLabelPosition,
+                        labelAnchor: barLabelAnchor),
+                    outsideBarLabelStyle: (barGroup, barData, index) =>
+                        const LabelStyle(fontSize: 11),
+                    animate: true,
+                    vertical: vertical,
+                    measureAxis: const MeasureAxis(
+                        showLine: false, desiredMaxTickCount: 3),
+                    domainAxis: const DomainAxis(
+                      gapAxisToLabel: 16,
+                      thickLength: 8,
+                      showLine: false,
+                    ),
+                    groupList: [
+                      OrdinalGroup(
+                          id: 'Bar',
+                          chartType: ChartType.bar,
+                          color: color ?? Colors.blueAccent,
+                          data: [...records]),
+                    ],
+                  )
+                : Center(
+                    child: Text(
+                    'Sem dados',
+                    style: TextStyle(color: Colors.grey[600]),
+                  )),
           ),
         ],
       ),

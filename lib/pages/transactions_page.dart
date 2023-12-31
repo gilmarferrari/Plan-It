@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../components/custom_list_month_header.dart';
 import '../components/custom_search_field.dart';
 import '../components/custom_transaction_cart.dart';
 import '../components/loading_container.dart';
@@ -150,36 +151,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          month.toUpperCase(),
-                                          style: const TextStyle(fontSize: 11),
-                                        ),
-                                        Text(
-                                          NumberFormat.simpleCurrency(
-                                                  locale: 'pt')
-                                              .format(monthTransactions
-                                                  .map((i) => i.type ==
-                                                          TransactionType
-                                                              .Expense
-                                                      ? (i.amount * -1)
-                                                      : i.amount)
-                                                  .fold<double>(
-                                                      0, (a, b) => a + b)),
-                                          style: const TextStyle(fontSize: 11),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                CustomListMonthHeader(
+                                    month: month,
+                                    amount: monthTransactions
+                                        .map((i) =>
+                                            i.type == TransactionType.Expense
+                                                ? (i.amount * -1)
+                                                : i.amount)
+                                        .fold<double>(0, (a, b) => a + b)),
                                 ...monthTransactions.map((t) =>
                                     CustomTransactionCard(transaction: t))
                               ]);

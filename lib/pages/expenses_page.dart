@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
+import '../components/custom_list_month_header.dart';
 import '../components/custom_search_field.dart';
 import '../components/edit_expense_bottom_sheet.dart';
 import '../components/loading_container.dart';
@@ -101,35 +102,19 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    month.toUpperCase(),
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                  Text(
-                                    NumberFormat.simpleCurrency(locale: 'pt')
-                                        .format(monthExpenses
-                                            .map((i) => i.amount)
-                                            .fold<double>(0, (a, b) => a + b)),
-                                    style: const TextStyle(fontSize: 11),
-                                  )
-                                ],
-                              ),
-                            ),
+                          CustomListMonthHeader(
+                            month: month,
+                            amount: monthExpenses
+                                .map((i) => i.amount)
+                                .fold<double>(0, (a, b) => a + b),
                           ),
                           ...monthExpenses.map((expense) => CustomCard(
                                   label: expense.budgetCategory.description,
                                   description:
                                       'Descrição: ${expense.description ?? 'Nenhuma'}\nValor: ${NumberFormat.simpleCurrency(locale: 'pt').format(expense.amount)}',
                                   icon: Icons.attach_money,
+                                  iconColor: Colors.red,
+                                  onTap: () => editExpense(context, expense),
                                   options: [
                                     BottomSheetAction(
                                         label: 'Editar',

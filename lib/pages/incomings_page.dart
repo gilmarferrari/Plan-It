@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
+import '../components/custom_list_month_header.dart';
 import '../components/custom_search_field.dart';
 import '../components/edit_incoming_bottom_sheet.dart';
 import '../components/loading_container.dart';
@@ -103,35 +104,20 @@ class _IncomingsPageState extends State<IncomingsPage> {
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    month.toUpperCase(),
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                  Text(
-                                    NumberFormat.simpleCurrency(locale: 'pt')
-                                        .format(monthIncomings
-                                            .map((i) => i.grossAmount)
-                                            .fold<double>(0, (a, b) => a + b)),
-                                    style: const TextStyle(fontSize: 11),
-                                  )
-                                ],
-                              ),
-                            ),
+                          CustomListMonthHeader(
+                            month: month,
+                            amount: monthIncomings
+                                .map((i) => i.grossAmount)
+                                .fold<double>(0, (a, b) => a + b),
                           ),
                           ...monthIncomings.map((incoming) => CustomCard(
                                   label: incoming.incomingCategory.description,
                                   description:
                                       'Valor Bruto: ${NumberFormat.simpleCurrency(locale: 'pt').format(incoming.grossAmount)}',
-                                  icon: Icons.attach_money,
+                                  icon: Icons.account_balance_wallet,
+                                  iconColor:
+                                      const Color.fromRGBO(0, 155, 114, 1),
+                                  onTap: () => editIncoming(context, incoming),
                                   options: [
                                     BottomSheetAction(
                                         label: 'Editar',

@@ -65,6 +65,8 @@ class _PayersPageState extends State<PayersPage> {
                       description:
                           '${payer.registrationNumber ?? 'Sem Registro'} / $payerType',
                       icon: Icons.apartment,
+                      iconColor: Colors.blue,
+                      onTap: () => editPayer(context, payer),
                       options: [
                         BottomSheetAction(
                             label: 'Editar',

@@ -9,63 +9,65 @@ class CustomCard extends StatelessWidget {
   final double elevation;
   final Color? iconColor;
   final bool clipText;
-  final bool showOptionsButton;
   final List<BottomSheetAction> options;
+  final Function() onTap;
 
   const CustomCard(
       {super.key,
       required this.label,
       required this.description,
       required this.options,
+      required this.onTap,
       required this.icon,
       this.iconColor,
       this.clipText = false,
-      this.showOptionsButton = true,
       this.elevation = 0});
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Card(
-        elevation: elevation,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Row(children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 15, 15, 15),
-              child: Icon(icon, color: iconColor),
-            ),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              SizedBox(
-                width: size.width - 130,
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.ellipsis,
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: () => displayOptions(context),
+      child: Card(
+          elevation: elevation,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 15, 20, 15),
+                child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: iconColor ?? Colors.grey,
+                        borderRadius: BorderRadius.circular(50)),
+                    child: Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 16,
+                    )),
               ),
-              SizedBox(
-                width: size.width - 130,
-                child: Text(
-                  description,
-                  style: const TextStyle(fontSize: 12),
-                  overflow:
-                      clipText ? TextOverflow.clip : TextOverflow.ellipsis,
-                ),
-              )
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        description,
+                        style: const TextStyle(fontSize: 12),
+                        overflow: clipText
+                            ? TextOverflow.clip
+                            : TextOverflow.ellipsis,
+                      )
+                    ]),
+              ),
             ]),
-          ]),
-          Container(
-              padding: const EdgeInsets.all(10),
-              child: showOptionsButton
-                  ? IconButton(
-                      splashRadius: 20,
-                      onPressed: () => displayOptions(context),
-                      icon: const Icon(Icons.more_vert),
-                    )
-                  : const Padding(padding: EdgeInsets.symmetric(vertical: 24)))
-        ]));
+          )),
+    );
   }
 
   displayOptions(context) {

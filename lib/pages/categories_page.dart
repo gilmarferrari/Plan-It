@@ -83,6 +83,11 @@ class _CategoriesPageState extends State<CategoriesPage>
                                 label: category.description,
                                 description: 'Categoria de Orçamento',
                                 icon: Icons.attach_money,
+                                onTap: () => editCategory(
+                                  context,
+                                  category,
+                                  CategoryType.Budget,
+                                ),
                                 options: [
                                   BottomSheetAction(
                                       label: 'Editar',
@@ -114,6 +119,12 @@ class _CategoriesPageState extends State<CategoriesPage>
                                 label: category.description,
                                 description: 'Categoria de Rendimento',
                                 icon: Icons.account_balance_wallet,
+                                iconColor: const Color.fromRGBO(0, 155, 114, 1),
+                                onTap: () => editCategory(
+                                  context,
+                                  category,
+                                  CategoryType.Incoming,
+                                ),
                                 options: [
                                   BottomSheetAction(
                                       label: 'Editar',

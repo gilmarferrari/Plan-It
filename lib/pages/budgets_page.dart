@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
 import '../components/custom_dropdown.dart';
+import '../components/custom_list_month_header.dart';
 import '../components/custom_search_field.dart';
 import '../components/edit_budget_bottom_sheet.dart';
 import '../components/loading_container.dart';
@@ -151,27 +152,9 @@ class _BudgetsPageState extends State<BudgetsPage> {
                               .fold<double>(0, (a, b) => a + b);
 
                           return Column(children: [
-                            Container(
-                              alignment: Alignment.center,
-                              width: double.infinity,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      month.description.toUpperCase(),
-                                      style: const TextStyle(fontSize: 11),
-                                    ),
-                                    Text(
-                                      NumberFormat.simpleCurrency(locale: 'pt')
-                                          .format(monthBudgeted),
-                                      style: const TextStyle(fontSize: 11),
-                                    )
-                                  ],
-                                ),
-                              ),
+                            CustomListMonthHeader(
+                              month: month.description,
+                              amount: monthBudgeted,
                             ),
                             ...budgetCategories.map((budgetCategory) {
                               var budgetedAmount = budgetEntries
@@ -187,6 +170,8 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                 description:
                                     'Orçado: ${NumberFormat.simpleCurrency(locale: 'pt').format(budgetedAmount)}',
                                 icon: Icons.attach_money,
+                                onTap: () => editBudget(context, budgetCategory,
+                                    month, budgetedAmount),
                                 options: budgetedAmount > 0
                                     ? [
                                         BottomSheetAction(

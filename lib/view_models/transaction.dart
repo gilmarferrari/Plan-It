@@ -15,9 +15,9 @@ class Transaction {
     required this.description,
     this.paymentDate,
   }) {
-    isFinished = entryDate.isAfter(DateTime.now()) &&
+    isFinished = entryDate.isBefore(DateTime.now()) &&
         (type == TransactionType.Expense
-            ? (paymentDate != null && paymentDate!.isAfter(DateTime.now()))
+            ? (paymentDate != null && paymentDate!.isBefore(DateTime.now()))
             : true);
   }
 

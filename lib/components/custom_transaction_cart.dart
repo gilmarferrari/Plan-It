@@ -18,8 +18,31 @@ class CustomTransactionCard extends StatelessWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 15, 15, 15),
-              child: getIcon(),
+              padding: const EdgeInsets.fromLTRB(14, 15, 20, 15),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  getIcon(),
+                  Container(
+                    child: transaction.isFinished
+                        ? Positioned(
+                            right: -4,
+                            bottom: -4,
+                            child: Container(
+                              padding: const EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: const Icon(
+                                Icons.verified,
+                                color: Colors.green,
+                                size: 12,
+                              ),
+                            ))
+                        : null,
+                  )
+                ],
+              ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(
@@ -52,13 +75,21 @@ class CustomTransactionCard extends StatelessWidget {
         ]));
   }
 
-  Icon getIcon() {
+  Widget getIcon() {
     switch (transaction.type) {
       case TransactionType.Expense:
-        return const Icon(Icons.arrow_drop_down_rounded, color: Colors.red);
+        return Container(
+          decoration: BoxDecoration(
+              color: Colors.red, borderRadius: BorderRadius.circular(50)),
+          child: const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
+        );
       case TransactionType.Incoming:
-        return const Icon(Icons.arrow_drop_up_rounded,
-            color: Color.fromRGBO(0, 155, 114, 1));
+        return Container(
+            decoration: BoxDecoration(
+                color: const Color.fromRGBO(0, 155, 114, 1),
+                borderRadius: BorderRadius.circular(50)),
+            child:
+                const Icon(Icons.arrow_drop_up_rounded, color: Colors.white));
       default:
         return const Icon(Icons.attach_money);
     }
