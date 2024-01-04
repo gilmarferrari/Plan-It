@@ -156,11 +156,17 @@ class _HomePageState extends State<HomePage>
                             icon: const Icon(Icons.apartment, size: 22),
                             color: Colors.grey[800],
                             onPressed: goToPayers),
+                        const Divider(indent: 20, endIndent: 20),
                         CustomDrawerButton(
                             label: 'Transações',
                             icon: const Icon(Icons.timeline, size: 22),
                             color: Colors.grey[800],
                             onPressed: goToTransactions),
+                        CustomDrawerButton(
+                            label: 'Relatórios',
+                            icon: const Icon(Icons.bar_chart, size: 22),
+                            color: Colors.grey[800],
+                            onPressed: goToReports),
                         const Divider(indent: 20, endIndent: 20),
                         CustomDrawerButton(
                             label: 'Importar Dados',
@@ -518,6 +524,10 @@ class _HomePageState extends State<HomePage>
 
   goToTransactions() {
     Navigator.pushNamed(context, AppRoutes.TRANSACTIONS);
+  }
+
+  goToReports() {
+    Navigator.pushNamed(context, AppRoutes.REPORTS);
   }
 
   exportData(BuildContext context) async {

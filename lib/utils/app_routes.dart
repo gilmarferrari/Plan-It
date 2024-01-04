@@ -9,4 +9,5 @@ class AppRoutes {
   static const PAYERS = '/payers';
   static const PAYMENT_TYPES = '/payment-types';
   static const TRANSACTIONS = '/transactions';
+  static const REPORTS = '/reports';
 }

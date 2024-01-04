@@ -10,6 +10,8 @@ class CustomDropdown extends StatelessWidget {
   final String prefix;
   final Function(dynamic value) onChanged;
   final double elevation;
+  final bool enabled;
+  final String? disabledText;
 
   const CustomDropdown(
       {super.key,
@@ -21,6 +23,8 @@ class CustomDropdown extends StatelessWidget {
       this.prefix = '',
       this.backgroundColor,
       this.iconColor,
+      this.enabled = true,
+      this.disabledText,
       this.elevation = 0});
 
   @override
@@ -59,13 +63,15 @@ class CustomDropdown extends StatelessWidget {
                       ...options.map((v) => DropdownMenuItem(
                           value: v,
                           child: Text(
-                            '$prefix $v',
+                            !enabled && disabledText != null
+                                ? disabledText!
+                                : '$prefix $v',
                             style: const TextStyle(
                               fontSize: 14,
                             ),
                           )))
                     ],
-                    onChanged: (dynamic v) => onChanged(v)),
+                    onChanged: enabled ? (dynamic v) => onChanged(v) : null),
               ),
             ),
           ])

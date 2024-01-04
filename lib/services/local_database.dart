@@ -231,12 +231,33 @@ class LocalDatabase {
     return true;
   }
 
-  Future<List<Expense>> getExpenses({bool paidOnly = false}) async {
+  Future<List<Expense>> getExpenses(
+      {bool paidOnly = false,
+      bool unpaidOnly = false,
+      bool scheduledOnly = false,
+      int? year}) async {
     var context = await _startConnection();
 
-    var expenses = await context.rawQuery(
-        '''SELECT * FROM Expenses ${paidOnly ? 'WHERE PaymentDate IS NOT NULL AND PaymentDate <= "${DateTime.now()}"' : ''}
+    var expenses = [];
+
+    if (paidOnly) {
+      expenses = await context.rawQuery(
+          '''SELECT * FROM Expenses WHERE PaymentDate IS NOT NULL AND PaymentDate <= "${DateTime.now()}"
         ORDER BY EntryDate''');
+    } else if (unpaidOnly) {
+      expenses = await context.rawQuery(
+          '''SELECT * FROM Expenses WHERE PaymentDate IS NULL ORDER BY EntryDate''');
+    } else if (scheduledOnly) {
+      expenses = await context.rawQuery(
+          '''SELECT * FROM Expenses WHERE PaymentDate > "${DateTime.now()}"
+        ORDER BY EntryDate''');
+    } else {
+      expenses = await context
+          .rawQuery('''SELECT * FROM Expenses WHERE ($year IS NULL OR
+          (PaymentDate IS NOT NULL AND strftime("%Y", PaymentDate) = "$year") OR
+          (PaymentDate IS NULL AND strftime("%Y", EntryDate) = "$year"))
+        ORDER BY EntryDate''');
+    }
 
     await _closeConnection(context);
 
@@ -407,12 +428,21 @@ class LocalDatabase {
     return true;
   }
 
-  Future<List<Incoming>> getIncomings({bool paidOnly = false}) async {
+  Future<List<Incoming>> getIncomings(
+      {bool paidOnly = false, int? year}) async {
     var context = await _startConnection();
 
-    var incomings = await context.rawQuery(
-        '''SELECT * FROM Incomings ${paidOnly ? 'WHERE EntryDate <= "${DateTime.now()}"' : ''}
+    var incomings = [];
+
+    if (paidOnly) {
+      incomings = await context.rawQuery(
+          '''SELECT * FROM Incomings ${paidOnly ? 'WHERE EntryDate <= "${DateTime.now()}"' : ''}
         ORDER BY EntryDate''');
+    } else {
+      incomings = await context.rawQuery(
+          '''SELECT * FROM Incomings WHERE ($year IS NULL OR strftime("%Y", EntryDate) = "$year")
+        ORDER BY EntryDate''');
+    }
 
     await _closeConnection(context);
 
