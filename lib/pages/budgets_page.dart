@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../components/custom_card.dart';
 import '../components/custom_dialog.dart';
 import '../components/custom_dropdown.dart';
+import '../components/custom_goal_card.dart';
 import '../components/custom_list_month_header.dart';
 import '../components/custom_search_field.dart';
 import '../components/edit_budget_bottom_sheet.dart';
 import '../components/loading_container.dart';
 import '../models/budget_category.dart';
 import '../models/budget_entry.dart';
+import '../models/expense.dart';
 import '../services/local_database.dart';
 import '../view_models/bottom_sheet_action.dart';
 import '../view_models/month.dart';
@@ -49,7 +50,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
   @override
   void initState() {
     super.initState();
-    _future = getBudgetEntries();
+    _future = getData();
   }
 
   @override
@@ -63,6 +64,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                 snapshot.data[0] ?? [].cast<BudgetCategory>();
             List<BudgetEntry> budgetEntries =
                 snapshot.data[1] ?? [].cast<BudgetEntry>();
+            List<Expense> expenses = snapshot.data[2] ?? [].cast<Expense>();
 
             budgetCategories = budgetCategories
                 .where((c) => (_searchTerm == null ||
@@ -134,7 +136,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                     onChanged: (dynamic year) {
                       setState(() {
                         _year = year;
-                        _future = getBudgetEntries();
+                        _future = getData();
                       });
                     },
                   ),
@@ -145,11 +147,10 @@ class _BudgetsPageState extends State<BudgetsPage> {
                         itemBuilder: (ctx, index) {
                           var month = _months[index];
                           var monthBudgeted = budgetEntries
-                              .where((b) =>
-                                  b.entryDate.year == _year &&
-                                  b.entryDate.month == month.value)
+                              .where((b) => b.entryDate.month == month.value)
                               .map((b) => b.amount)
                               .fold<double>(0, (a, b) => a + b);
+                          ;
 
                           return Column(children: [
                             CustomListMonthHeader(
@@ -165,10 +166,17 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                   .map((e) => e.amount)
                                   .fold<double>(0, (a, b) => a + b);
 
-                              return CustomCard(
+                              var expensesAmount = expenses
+                                  .where((e) =>
+                                      e.entryDate.month == month.value &&
+                                      e.budgetCategory.id == budgetCategory.id)
+                                  .map((e) => e.amount)
+                                  .fold<double>(0, (a, b) => a + b);
+
+                              return CustomGoalCard(
                                 label: budgetCategory.description,
-                                description:
-                                    'Orçado: ${NumberFormat.simpleCurrency(locale: 'pt').format(budgetedAmount)}',
+                                goal: budgetedAmount,
+                                progress: expensesAmount,
                                 icon: Icons.attach_money,
                                 onTap: () => editBudget(context, budgetCategory,
                                     month, budgetedAmount),
@@ -214,10 +222,11 @@ class _BudgetsPageState extends State<BudgetsPage> {
         });
   }
 
-  Future<List<List<dynamic>>> getBudgetEntries() async {
+  Future<List<List<dynamic>>> getData() async {
     return [
       await _localDatabase.getBudgetCategories(activeOnly: true),
-      await _localDatabase.getBudgetEntries(year: _year)
+      await _localDatabase.getBudgetEntries(year: _year),
+      await _localDatabase.getExpenses(year: _year)
     ];
   }
 
@@ -257,7 +266,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                       budgetCategoryID: budgetCategoryID);
                 }
 
-                _future = getBudgetEntries();
+                _future = getData();
 
                 setState(() => _isLoading = false);
               });
@@ -281,7 +290,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                     month: month.value,
                     budgetCategoryID: category.id);
 
-                _future = getBudgetEntries();
+                _future = getData();
 
                 setState(() => _isLoading = false);
               });
