@@ -17,36 +17,73 @@ class LocalDatabase {
     var databasePath = await getDatabasesPath();
 
     var context = await openDatabase('${databasePath}minhacoop.db', version: 1,
-        onOpen: (db) async {
-      db.execute('PRAGMA foreign_keys = ON');
-      await db.execute('''CREATE TABLE IF NOT EXISTS BudgetCategories
+        onCreate: (db, version) async {
+      switch (version) {
+        case 1:
+          db.execute('PRAGMA foreign_keys = ON');
+          await db.execute('''CREATE TABLE IF NOT EXISTS BudgetCategories
             (ID INTEGER PRIMARY KEY, Description TEXT NOT NULL, IsActive INTEGER NOT NULL);''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS IncomingCategories
+          await db.execute('''CREATE TABLE IF NOT EXISTS IncomingCategories
             (ID INTEGER PRIMARY KEY, Description TEXT NOT NULL, IsActive INTEGER NOT NULL);''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS Payers
+          await db.execute('''CREATE TABLE IF NOT EXISTS Payers
             (ID INTEGER PRIMARY KEY, Description TEXT NOT NULL, RegistrationNumber TEXT,
             Type TEXT, IsActive INTEGER NOT NULL);''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS PaymentTypes
+          await db.execute('''CREATE TABLE IF NOT EXISTS PaymentTypes
             (ID INTEGER PRIMARY KEY, Description TEXT NOT NULL, IsActive INTEGER NOT NULL);''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS BudgetEntries
+          await db.execute('''CREATE TABLE IF NOT EXISTS BudgetEntries
             (ID INTEGER PRIMARY KEY, Amount REAL NOT NULL, EntryDate TEXT NOT NULL,
             BudgetCategoryID INTEGER, FOREIGN KEY(BudgetCategoryID) REFERENCES BudgetCategories(ID));''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS Expenses
+          await db.execute('''CREATE TABLE IF NOT EXISTS Expenses
             (ID INTEGER PRIMARY KEY, EntryDate TEXT NOT NULL, PaymentDate TEXT, Amount REAL NOT NULL,
             Description TEXT, BudgetCategoryID INTEGER NOT NULL, PaymentTypeID INTEGER NOT NULL,
             FOREIGN KEY(BudgetCategoryID) REFERENCES BudgetCategories(ID),
             FOREIGN KEY(PaymentTypeID) REFERENCES PaymentTypes(ID));''');
 
-      await db.execute('''CREATE TABLE IF NOT EXISTS Incomings
+          await db.execute('''CREATE TABLE IF NOT EXISTS Incomings
             (ID INTEGER PRIMARY KEY, EntryDate TEXT NOT NULL, GrossAmount REAL NOT NULL, Discounts REAL NOT NULL,
             IncomingCategoryID INTEGER NOT NULL, PayerID INTEGER,
             FOREIGN KEY(IncomingCategoryID) REFERENCES IncomingCategories(ID),
             FOREIGN KEY(PayerID) REFERENCES Payers(ID));''');
+
+          await db.execute('''
+            INSERT INTO BudgetCategories (Description, IsActive)
+            VALUES
+              ('Alimentação', 1),
+              ('Educação', 1),
+              ('Lazer', 1),
+              ('Moradia', 1),
+              ('Saúde', 1),
+              ('Veículos', 1),
+              ('Vestuário', 1),
+              ('Outros', 1)
+            ''');
+
+          await db.execute('''
+            INSERT INTO IncomingCategories (Description, IsActive)
+            VALUES
+              ('Salário', 1),
+              ('Férias', 1),
+              ('13° Salário', 1),
+              ('Outros', 1)
+            ''');
+
+          await db.execute('''
+            INSERT INTO PaymentTypes (Description, IsActive)
+            VALUES
+              ('Dinheiro', 1),
+              ('Cartão de Crédito', 1),
+              ('Cartão de Débito', 1),
+              ('Transferência Bancária', 1),
+              ('Pix', 1),
+              ('Boleto', 1)
+            ''');
+          break;
+      }
     });
 
     return context;

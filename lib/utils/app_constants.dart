@@ -21,4 +21,6 @@ class AppConstants {
 
     return MaterialColor(color.value, shades);
   }
+
+  static String isTutorialCompleteKey = 'isTutorialComplete';
 }

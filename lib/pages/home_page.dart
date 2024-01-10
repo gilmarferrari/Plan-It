@@ -16,6 +16,8 @@ import '../services/local_database.dart';
 import '../utils/app_constants.dart';
 import '../utils/app_routes.dart';
 import '../utils/extensions.dart';
+import '../utils/local_storage.dart';
+import 'tutorial_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,6 +44,10 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _future = getDashboardData();
+
+    Future.delayed(const Duration(seconds: 1), () {
+      showTutorial();
+    });
   }
 
   @override
@@ -566,5 +572,30 @@ class _HomePageState extends State<HomePage>
             actionType: ActionType.ImportData,
           );
         });
+  }
+
+  showTutorial() async {
+    await LocalStorage.getBool(AppConstants.isTutorialCompleteKey, true)
+        .then((isTutorialComplete) {
+      if (!isTutorialComplete) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () {
+                return Future.value(false);
+              },
+              child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: const TutorialPage(),
+                  )),
+            );
+          },
+        );
+      }
+    });
   }
 }
