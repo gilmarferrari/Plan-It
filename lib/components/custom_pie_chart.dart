@@ -65,11 +65,16 @@ class CustomPieChart extends StatelessWidget {
                 child: records.where((r) => r.measure > 0).isNotEmpty
                     ? DChartPieO(
                         configRenderPie: ConfigRenderPie(
+                            arcWidth: 50,
                             arcLabelDecorator: ArcLabelDecorator(
-                          labelPosition: ArcLabelPosition.auto,
-                          outsideLabelStyle: const LabelStyle(
-                              color: Colors.black87, fontSize: 11),
-                        )),
+                              labelPosition: ArcLabelPosition.auto,
+                              leaderLineStyle: const ArcLabelLeaderLineStyle(
+                                  color: Colors.black,
+                                  length: 30,
+                                  thickness: 1),
+                              outsideLabelStyle: const LabelStyle(
+                                  color: Colors.black87, fontSize: 11),
+                            )),
                         customLabel: (pieData, index) {
                           return labelFormat
                               .format((pieData.measure as double).round());

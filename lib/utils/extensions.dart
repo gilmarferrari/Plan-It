@@ -14,7 +14,7 @@ class Extensions {
 
   static Map<T, int> mostFrequent<T>(
       List<T> list, dynamic Function(T) comparator, int count) {
-    if (list.isEmpty || count > list.length) {
+    if (list.isEmpty) {
       return {};
     }
 
@@ -37,7 +37,7 @@ class Extensions {
 
   static Map<T, double> highestValue<T>(List<T> list,
       dynamic Function(T) comparator, dynamic Function(T) sorter, int count) {
-    if (list.isEmpty || count > list.length) {
+    if (list.isEmpty) {
       return {};
     }
 

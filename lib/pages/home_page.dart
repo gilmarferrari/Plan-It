@@ -63,14 +63,14 @@ class _HomePageState extends State<HomePage>
             int currentYear = DateTime.now().year;
 
             List<Incoming> lastFiveYearsIncomings = incomings
-                .takeWhile((i) =>
-                    i.entryDate.year >= (currentYear - 5) &&
+                .where((i) =>
+                    i.entryDate.year > (currentYear - 3) &&
                     i.entryDate.year <= currentYear)
                 .toList();
 
             List<Expense> lastFiveYearsExpenses = expenses
-                .takeWhile((e) =>
-                    e.entryDate.year >= (currentYear - 5) &&
+                .where((e) =>
+                    e.entryDate.year > (currentYear - 3) &&
                     e.entryDate.year <= currentYear)
                 .toList();
 
@@ -338,7 +338,7 @@ class _HomePageState extends State<HomePage>
                       child: ListView(children: [
                         CustomBarChart(
                           title: 'Rendimento Bruto por Ano',
-                          subtitle: 'Últimos 5 anos',
+                          subtitle: 'Últimos 3 anos',
                           color: const Color.fromRGBO(80, 160, 80, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
@@ -355,7 +355,7 @@ class _HomePageState extends State<HomePage>
                         ),
                         CustomBarChart(
                           title: 'Rendimento Líquido por Ano',
-                          subtitle: 'Últimos 5 anos',
+                          subtitle: 'Últimos 3 anos',
                           color: const Color.fromRGBO(0, 155, 114, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
@@ -372,7 +372,7 @@ class _HomePageState extends State<HomePage>
                         ),
                         CustomBarChart(
                           title: 'Descontos por Ano',
-                          subtitle: 'Últimos 5 anos',
+                          subtitle: 'Últimos 3 anos',
                           color: const Color.fromRGBO(242, 100, 48, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),
@@ -394,7 +394,7 @@ class _HomePageState extends State<HomePage>
                       child: ListView(children: [
                         CustomBarChart(
                           title: 'Despesas por Ano',
-                          subtitle: 'Últimos 5 anos',
+                          subtitle: 'Últimos 3 anos',
                           color: const Color.fromRGBO(255, 152, 0, 1),
                           labelFormat:
                               NumberFormat.simpleCurrency(locale: 'pt'),

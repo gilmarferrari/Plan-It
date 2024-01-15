@@ -118,6 +118,9 @@ class _BudgetsPageState extends State<BudgetsPage> {
                           Text(
                             NumberFormat.simpleCurrency(locale: 'pt').format(
                                 budgetEntries
+                                    .where((b) => budgetCategories
+                                        .map((c) => c.id)
+                                        .contains(b.budgetCategory.id))
                                     .map((i) => i.amount)
                                     .fold<double>(0, (a, b) => a + b)),
                             style: const TextStyle(
@@ -147,10 +150,13 @@ class _BudgetsPageState extends State<BudgetsPage> {
                         itemBuilder: (ctx, index) {
                           var month = _months[index];
                           var monthBudgeted = budgetEntries
-                              .where((b) => b.entryDate.month == month.value)
+                              .where((b) =>
+                                  b.entryDate.month == month.value &&
+                                  budgetCategories
+                                      .map((c) => c.id)
+                                      .contains(b.budgetCategory.id))
                               .map((b) => b.amount)
                               .fold<double>(0, (a, b) => a + b);
-                          ;
 
                           return Column(children: [
                             CustomListMonthHeader(
@@ -226,7 +232,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
     return [
       await _localDatabase.getBudgetCategories(activeOnly: true),
       await _localDatabase.getBudgetEntries(year: _year),
-      await _localDatabase.getExpenses(year: _year)
+      await _localDatabase.getExpenses(year: _year, filterEntryDateYear: true)
     ];
   }
 

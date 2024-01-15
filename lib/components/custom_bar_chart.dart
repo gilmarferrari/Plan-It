@@ -62,7 +62,8 @@ class CustomBarChart extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: records.where((r) => r.measure > 0).isNotEmpty
                 ? DChartBarO(
-                    configRenderBar: ConfigRenderBar(maxBarWidthPx: 100),
+                    configRenderBar:
+                        ConfigRenderBar(maxBarWidthPx: vertical ? 100 : 25),
                     barLabelValue: (barGroup, barData, index) =>
                         '${labelFormat.format((barData.measure as double).round())}$suffix',
                     barLabelDecorator: BarLabelDecorator(

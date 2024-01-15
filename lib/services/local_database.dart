@@ -272,6 +272,7 @@ class LocalDatabase {
       {bool paidOnly = false,
       bool unpaidOnly = false,
       bool scheduledOnly = false,
+      bool filterEntryDateYear = false,
       int? year}) async {
     var context = await _startConnection();
 
@@ -287,6 +288,10 @@ class LocalDatabase {
     } else if (scheduledOnly) {
       expenses = await context.rawQuery(
           '''SELECT * FROM Expenses WHERE PaymentDate > "${DateTime.now()}"
+        ORDER BY EntryDate''');
+    } else if (filterEntryDateYear) {
+      expenses = await context.rawQuery(
+          '''SELECT * FROM Expenses WHERE ($year IS NULL OR strftime("%Y", EntryDate) = "$year")
         ORDER BY EntryDate''');
     } else {
       expenses = await context
