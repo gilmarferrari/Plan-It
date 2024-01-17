@@ -1,16 +1,8 @@
-# plan_it
+# Plan It
 
-A new Flutter project.
+Plan It is an open-source, free budget app. Its purpose is to simply help people control their expenses and build a better budget.
+This project will not, at any time, promote ads or charge the users for special features or subscriptions.
 
-## Getting Started
+Contributions and donations are completely optional. In addition, everyone can submit their pull requests to improve the app.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+If you want, feel free to support the developer with your donation at https://www.paypal.com/donate/?hosted_button_id=QYXALUG4388SQ
