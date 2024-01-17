@@ -65,7 +65,7 @@ class CustomPieChart extends StatelessWidget {
                 child: records.where((r) => r.measure > 0).isNotEmpty
                     ? DChartPieO(
                         configRenderPie: ConfigRenderPie(
-                            arcWidth: 50,
+                            arcWidth: 70,
                             arcLabelDecorator: ArcLabelDecorator(
                               labelPosition: ArcLabelPosition.auto,
                               leaderLineStyle: const ArcLabelLeaderLineStyle(
