@@ -1,7 +1,11 @@
+import 'dart:io';
 import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import '../components/app_update_dialog.dart';
 import '../components/custom_dropdown.dart';
 import '../components/custom_pie_chart.dart';
 import '../components/import_export_data_bottom_sheet.dart';
@@ -12,6 +16,7 @@ import '../models/budget_entry.dart';
 import '../models/expense.dart';
 import '../models/expense_category_amount_dto.dart';
 import '../models/incoming.dart';
+import '../services/app_versions_service.dart';
 import '../services/local_database.dart';
 import '../utils/app_constants.dart';
 import '../utils/app_routes.dart';
@@ -30,6 +35,7 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late Future<dynamic> _future;
   late final LocalDatabase _localDatabase = LocalDatabase();
+  final AppVersionsService _appVersionsService = AppVersionsService();
   final List<int> _years = [
     for (int i = 2020; i <= DateTime.now().year + 1; i++) i
   ];
@@ -47,6 +53,7 @@ class _HomePageState extends State<HomePage>
 
     Future.delayed(const Duration(seconds: 1), () {
       showTutorial();
+      checkForUpdates();
     });
   }
 
@@ -574,7 +581,7 @@ class _HomePageState extends State<HomePage>
         });
   }
 
-  showTutorial() async {
+  Future<void> showTutorial() async {
     await LocalStorage.getBool(AppConstants.isTutorialCompleteKey, true)
         .then((isTutorialComplete) {
       if (!isTutorialComplete) {
@@ -582,10 +589,8 @@ class _HomePageState extends State<HomePage>
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return WillPopScope(
-              onWillPop: () {
-                return Future.value(false);
-              },
+            return PopScope(
+              canPop: false,
               child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: ClipRRect(
@@ -597,5 +602,42 @@ class _HomePageState extends State<HomePage>
         );
       }
     });
+  }
+
+  checkForUpdates() async {
+    if (Platform.isAndroid) {
+      try {
+        var packageInfo = await PackageInfo.fromPlatform();
+        var currentVersionCode = int.parse(packageInfo.buildNumber);
+
+        await _appVersionsService
+            .getLatestAppVersion()
+            .then((gitHubRelease) async {
+          if ((gitHubRelease?.getApkAsset().getVersionCode() ?? 0) >
+              currentVersionCode) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return PopScope(
+                  canPop: false,
+                  child: AppUpdateDialog(
+                    downloadUrl: '${gitHubRelease?.getApkAsset().downloadUrl}',
+                    fileName: '${gitHubRelease?.getApkAsset().name}',
+                    size: gitHubRelease?.getApkAsset().size ?? 0,
+                  ),
+                );
+              },
+            );
+          }
+        });
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: e.toString(),
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    }
   }
 }

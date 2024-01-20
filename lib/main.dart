@@ -30,6 +30,7 @@ class App extends StatelessWidget {
         navigatorKey: AppConstants.globalNavKey,
         locale: const Locale('pt', 'BR'),
         theme: ThemeData(
+            useMaterial3: false,
             primarySwatch: AppConstants.primaryColor,
             scaffoldBackgroundColor: Colors.grey[100]),
         routes: {

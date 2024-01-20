@@ -16,7 +16,7 @@ class LocalDatabase {
   Future<Database> _startConnection() async {
     var databasePath = await getDatabasesPath();
 
-    var context = await openDatabase('${databasePath}minhacoop.db', version: 1,
+    var context = await openDatabase('${databasePath}planit.db', version: 1,
         onCreate: (db, version) async {
       switch (version) {
         case 1:
