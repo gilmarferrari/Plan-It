@@ -582,7 +582,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> showTutorial() async {
-    await LocalStorage.getBool(AppConstants.isTutorialCompleteKey, true)
+    await LocalStorage.getBool(AppConstants.isTutorialCompleteKey)
         .then((isTutorialComplete) {
       if (!isTutorialComplete) {
         showDialog(
