@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../components/app_update_dialog.dart';
 import '../components/custom_dropdown.dart';
 import '../components/custom_pie_chart.dart';
+import '../components/custom_text_chart.dart';
 import '../components/import_export_data_bottom_sheet.dart';
 import '../components/custom_bar_chart.dart';
 import '../components/custom_drawer_button.dart';
@@ -252,6 +253,18 @@ class _HomePageState extends State<HomePage>
                     Tab(
                       height: double.infinity,
                       child: ListView(children: [
+                        CustomTextChart(
+                          title: 'Saldo Atual',
+                          subtitle: 'Rendimentos líquidos menos despesas',
+                          labelFormat:
+                              NumberFormat.simpleCurrency(locale: 'pt'),
+                          amount: incomings
+                                  .map((i) => i.grossAmount - i.discounts)
+                                  .fold<double>(0, (a, b) => a + b) -
+                              expenses
+                                  .map((e) => e.amount)
+                                  .fold<double>(0, (a, b) => a + b),
+                        ),
                         CustomPieChart(
                           title: 'Rendimentos x Despesas',
                           labelFormat:

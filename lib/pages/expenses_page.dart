@@ -43,7 +43,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
 
             expenses = expenses
                 .where((e) => (_searchTerm == null ||
-                    ('${e.description}').toLowerCase().contains(_searchTerm!)))
+                    ('${e.description}').toLowerCase().contains(_searchTerm!) ||
+                    (e.budgetCategory.description)
+                        .toLowerCase()
+                        .contains(_searchTerm!)))
                 .toList();
 
             var months = expenses

@@ -121,10 +121,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                   Text(
                                     NumberFormat.simpleCurrency(locale: 'pt')
                                         .format(transactions
-                                            .map((i) => i.type ==
+                                            .where((t) => t.isFinished)
+                                            .map((t) => t.type ==
                                                     TransactionType.Expense
-                                                ? (i.amount * -1)
-                                                : i.amount)
+                                                ? (t.amount * -1)
+                                                : t.amount)
                                             .fold<double>(0, (a, b) => a + b)),
                                     style: const TextStyle(
                                         fontSize: 11, color: Colors.white),
